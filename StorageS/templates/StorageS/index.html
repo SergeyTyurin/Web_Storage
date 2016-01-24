@@ -1,0 +1,14 @@
+{% extends 'StorageS/base.html' %} {% block content %} {% if user.is_authenticated %}
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <form method="post">
+            {% csrf_token %}
+            <div class="btn-group-vertical col-md-12">
+                <button formaction="{% url 'store:products' %}" type="submit" onfocus="this.blur()" class="btn btn-default btn-lg btn-block">Каталог товаров</button>
+                <button formaction="{% url 'store:add_product' %}" type="submit" onfocus="this.blur()" class="btn btn-default btn-lg btn-block">Добавить товар</button>
+                <button formaction="{% url 'store:new_order' %}" type="submit" onfocus="this.blur()" class="btn btn-default btn-lg btn-block">Оформить заказ</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %} {% endblock %}

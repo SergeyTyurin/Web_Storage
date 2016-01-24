@@ -1,0 +1,7 @@
+{% extends 'StorageS/base.html' %} {% block content %}
+{% if clients_list %}
+    {% for client in clients_list %}
+        {{ client.id}}. {{ client.client_name}}&nbsp&nbsp&nbsp&nbsp{{ client.client_birthday }}<br>
+    {% endfor %}
+{% endif %}
+{% endblock %}

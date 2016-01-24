@@ -1,0 +1,33 @@
+{% extends 'StorageS/base.html' %} {% block content %}
+<br>
+<br>
+<br>
+<div class="col-md-4 col-md-offset-4">
+    <div class="form-group">
+        <form method="post" action="{% url 'store:login' %}" class="form-horizontal">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username" class="col-md-2 control-label">Логин</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" id="id_username" placeholder="Введите логин" name="username">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_password" class="col-md-2 control-label">Пароль</label>
+                <div class="col-md-10">
+                    <input type="password" class="form-control" id="id_password" placeholder="Введите пароль" name="password">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <button type="submit" class="btn btn-success">Войти</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% if error %}
+    <div class="text-center text-danger">
+        {{ error }}
+    </div>
+</div>
+{%endif%} {% endblock %}

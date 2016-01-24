@@ -1,0 +1,106 @@
+create procedure products_in_branch(branch integer)
+begin
+begin
+select StorageS_product.id, product_name, product_cost, product_made, product_category, product_rest from StorageS_product join StorageS_branchproduct
+on StorageS_product.id=StorageS_branchproduct.product_id
+where StorageS_branchproduct.branch_id=branch;
+end
+
+create procedure get_manager(user varchar(30))
+begin
+    select id, branch_id from StorageS_manager
+    where user_id in (select id from auth_user where username=user);
+end
+
+
+create procedure get_branch(user varchar(30))
+begin
+    select id, branch_address from StorageS_branch
+    where id in (select branch_id from StorageS_manager
+                 where user_id  in
+                 (select id from auth_user where username=user));
+end;
+
+Acer Aspire E5-511
+Ноутбук
+Китай
+57024.0
+
+create procedure add_product(name varchar(50), categ varchar(50), country varchar(20), cost integer, my_count integer, branch integer)
+begin
+    declare prod_id integer;
+    if (select count(*) from StorageS_product where product_name=name) = 0 then
+        insert into StorageS_product (product_name, product_category, product_made, product_cost)
+        values(name,categ,country,cost);
+        set prod_id = (select max(id) from StorageS_product);
+        insert into StorageS_branchproduct (branch_id, product_id, product_rest)
+        values(branch, prod_id, my_count);
+    elseif (select product_category from StorageS_product where product_name=name) <> categ then
+        insert into StorageS_product (product_name, product_category, product_made, product_cost)
+        values(name,categ,country,cost);
+        set prod_id = (select max(id) from StorageS_product);
+        insert into StorageS_branchproduct (branch_id, product_id, product_rest)
+        values(branch, prod_id, my_count);
+    elseif (select product_made from StorageS_product where product_name=name) <> country then
+        insert into StorageS_product (product_name, product_category, product_made, product_cost)
+        values(name,categ,country,cost);
+        set prod_id = (select max(id) from StorageS_product);
+        insert into StorageS_branchproduct (branch_id, product_id, product_rest)
+        values(branch, prod_id, my_count);
+    elseif (select product_cost from StorageS_product where product_name=name) <> cost then
+        set prod_id = (select id from StorageS_product where product_name=name);
+        update StorageS_product set product_cost = cost where id=prod_id;
+        update StorageS_branchproduct set product_rest = product_rest+my_count
+        where product_id = prod_id and branch_id = branch;
+    else
+        set prod_id = (select id from StorageS_product where product_name=name);
+        update StorageS_branchproduct set product_rest = product_rest+my_count
+        where product_id = prod_id and branch_id = branch;
+    end if;
+end
+
+
+1   Acer Aspire E5-511  Ноутбук Китай   10  57024.0
+
+
+begin
+    declare prod_id integer;
+    if name in (select product_name from StorageS_product)
+    and categ in (select product_category from StorageS_product)
+    and country in (select product_made from StorageS_product) then
+        set prod_id = (select id from StorageS_product
+        where product_name=name and product_caregory = categ and
+                     product_made=country)
+        update StorageS_product set product_cost=cost
+        where id = prod_id;
+        update StorageS_branchproduct
+        set product_rest = product_rest + my_count
+        where product_id = prod_id and branch_id = branch;
+    else
+        insert into StorageS_product (product_name, product_category, product_made, product_cost)
+        values(name,categ,country,cost);
+        set prod_id = (select max(id) from StorageS_product);
+        insert into StorageS_branchproduct (branch_id, product_id, product_rest)
+        values(branch, prod_id, my_count);
+end
+
+
+----------
+begin
+    declare prod_id integer;
+    insert into StorageS_product (product_name, product_category,
+                                  product_made, product_cost)
+    values(name,categ,country,cost);
+    set prod_id = (select max(id) from StorageS_product);
+    insert into StorageS_branchproduct (product_id,branch_id,product_rest)
+    values(prod_id,branch,my_count);
+end
+
+
+create procedure change_product(name varchar(50), categ varchar(50), country varchar(20), cost float, my_count integer, branch integer)
+begin
+    declare prod_id integer;
+    set prod_id = (select id from StorageS_product where product_name = name and product_category = categ and product_made = country);
+    update StorageS_product set product_cost=cost where id=prod_id;
+    update StorageS_branchproduct set product_rest = product_rest + my_count where product_id = prod_id and branch_id = branch;
+end;
